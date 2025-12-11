@@ -46,17 +46,17 @@ export const MedalRow: React.FC<MedalRowProps> = ({ data, isHeader = false }) =>
       ${data.rank === 1 ? 'bg-yellow-50/30' : ''}
     `}>
       {/* Rank */}
-      <td className="px-4 py-4 whitespace-nowrap text-center w-16">
-        <div className={`text-lg ${rankBg}`}>
+      <td className="px-2 py-3 md:px-4 md:py-4 whitespace-nowrap text-center w-8 md:w-16">
+        <div className={`text-sm md:text-lg ${rankBg}`}>
           {data.rank}
         </div>
       </td>
 
       {/* Country */}
-      <td className="px-4 py-4 whitespace-nowrap">
+      <td className="px-2 py-3 md:px-4 md:py-4 whitespace-nowrap">
         <div className="flex items-center">
-          {/* Flag Container: Changed from rounded-full w-10 h-10 to rounded w-14 h-9 for rectangular shape */}
-          <div className="flex-shrink-0 h-9 w-14 relative bg-gray-100 rounded shadow-sm border border-gray-200 flex items-center justify-center overflow-hidden">
+          {/* Flag Container: Responsive size */}
+          <div className="flex-shrink-0 h-6 w-10 md:h-9 md:w-14 relative bg-gray-100 rounded shadow-sm border border-gray-200 flex items-center justify-center overflow-hidden">
              {flagUrl ? (
                <img 
                  src={flagUrl} 
@@ -65,47 +65,48 @@ export const MedalRow: React.FC<MedalRowProps> = ({ data, isHeader = false }) =>
                  loading="lazy"
                />
              ) : (
-               <span className="text-xs font-bold text-gray-500">{data.countryCode}</span>
+               <span className="text-[10px] md:text-xs font-bold text-gray-500">{data.countryCode}</span>
              )}
           </div>
-          <div className="ml-4">
-            <div className="text-sm font-bold text-gray-900">{data.countryName}</div>
-            <div className="text-xs text-gray-500">{data.countryCode}</div>
+          <div className="ml-2 md:ml-4">
+            <div className="text-xs md:text-sm font-bold text-gray-900 truncate max-w-[100px] md:max-w-none">{data.countryName}</div>
+            {/* Hide code on mobile to save space */}
+            <div className="hidden md:block text-xs text-gray-500">{data.countryCode}</div>
           </div>
         </div>
       </td>
 
       {/* Gold */}
-      <td className="px-4 py-4 whitespace-nowrap text-center">
+      <td className="px-1 py-3 md:px-4 md:py-4 whitespace-nowrap text-center">
         <div className="flex flex-col items-center justify-center">
-            <span className={`text-base font-bold ${isTop3 ? 'text-yellow-600' : 'text-gray-800'}`}>
+            <span className={`text-sm md:text-base font-bold ${isTop3 ? 'text-yellow-600' : 'text-gray-800'}`}>
                 {data.gold}
             </span>
-            {isTop3 && data.gold > 0 && <div className="h-1 w-8 bg-yellow-400 rounded-full mt-1 opacity-50"></div>}
+            {isTop3 && data.gold > 0 && <div className="hidden md:block h-1 w-8 bg-yellow-400 rounded-full mt-1 opacity-50"></div>}
         </div>
       </td>
 
       {/* Silver */}
-      <td className="px-4 py-4 whitespace-nowrap text-center">
+      <td className="px-1 py-3 md:px-4 md:py-4 whitespace-nowrap text-center">
         <div className="flex flex-col items-center justify-center">
-            <span className={`text-base font-bold ${isTop3 ? 'text-slate-500' : 'text-gray-800'}`}>
+            <span className={`text-sm md:text-base font-bold ${isTop3 ? 'text-slate-500' : 'text-gray-800'}`}>
                 {data.silver}
             </span>
         </div>
       </td>
 
       {/* Bronze */}
-      <td className="px-4 py-4 whitespace-nowrap text-center">
+      <td className="px-1 py-3 md:px-4 md:py-4 whitespace-nowrap text-center">
         <div className="flex flex-col items-center justify-center">
-            <span className={`text-base font-bold ${isTop3 ? 'text-orange-600' : 'text-gray-800'}`}>
+            <span className={`text-sm md:text-base font-bold ${isTop3 ? 'text-orange-600' : 'text-gray-800'}`}>
                 {data.bronze}
             </span>
         </div>
       </td>
 
       {/* Total */}
-      <td className="px-4 py-4 whitespace-nowrap text-center">
-        <span className="inline-flex items-center justify-center px-3 py-1 rounded-full text-sm font-bold bg-slate-100 text-slate-800">
+      <td className="px-2 py-3 md:px-4 md:py-4 whitespace-nowrap text-center">
+        <span className="inline-flex items-center justify-center px-2 py-0.5 md:px-3 md:py-1 rounded-full text-xs md:text-sm font-bold bg-slate-100 text-slate-800">
           {data.total}
         </span>
       </td>
