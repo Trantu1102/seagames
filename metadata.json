@@ -1,0 +1,5 @@
+{
+  "name": "SEA Games 33 Medal Tally",
+  "description": "Real-time medal standing board for the 33rd SEA Games with auto-refresh functionality.",
+  "requestFramePermissions": []
+}
