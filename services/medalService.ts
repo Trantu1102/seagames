@@ -22,6 +22,21 @@ const getCountryCode = (name: string): string => {
   return name.substring(0, 3).toUpperCase();
 };
 
+// Mapping from Country Code to Vietnamese Name
+const COUNTRY_VI_NAMES: Record<string, string> = {
+  "THA": "THÁI LAN",
+  "VIE": "VIỆT NAM",
+  "INA": "INDONESIA",
+  "PHI": "PHILIPPINES",
+  "MAS": "MALAYSIA",
+  "SGP": "SINGAPORE",
+  "MYA": "MYANMAR",
+  "LAO": "LÀO",
+  "BRU": "BRUNEI",
+  "TLS": "TIMOR LESTE",
+  "CAM": "CAMPUCHIA"
+};
+
 export const fetchMedalTally = async (): Promise<{ data: MedalStanding[]; isFallback: boolean }> => {
   try {
     const controller = new AbortController();
@@ -60,12 +75,16 @@ export const fetchMedalTally = async (): Promise<{ data: MedalStanding[]; isFall
     // Map data to MedalStanding
     // Supports both n8n keys (country, gold) and raw keys (org_nm, gold_count) based on previous context
     const data: MedalStanding[] = rawList.map((item: any) => {
-        const countryName = item.country || item.org_nm || "Unknown";
+        const rawName = item.country || item.org_nm || "Unknown";
+        const code = getCountryCode(rawName);
+        
+        // Use Vietnamese name if available, otherwise uppercase the raw name
+        const displayName = COUNTRY_VI_NAMES[code] || rawName.toUpperCase();
         
         return {
             rank: Number(item.ranking) || 0,
-            countryName: countryName,
-            countryCode: getCountryCode(countryName),
+            countryName: displayName,
+            countryCode: code,
             // Look for 'gold' (n8n) or 'gold_count' (raw api)
             gold: Number(item.gold ?? item.gold_count) || 0,
             silver: Number(item.silver ?? item.silver_count) || 0,
