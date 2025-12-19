@@ -42,9 +42,23 @@ export const fetchMedalTally = async (): Promise<{ data: MedalStanding[]; isFall
     const controller = new AbortController();
     const id = setTimeout(() => controller.abort(), 15000);
 
-    const response = await fetch(API_URL, {
+    // ==========================================
+    // SỬA LỖI CACHE TẠI ĐÂY
+    // ==========================================
+    // Kiểm tra xem URL gốc đã có dấu ? chưa để thêm ký tự nối phù hợp
+    const separator = API_URL.includes('?') ? '&' : '?';
+    // Thêm timestamp vào cuối URL để đảm bảo mỗi lần gọi là một request mới
+    const url = `${API_URL}${separator}t=${new Date().getTime()}`;
+
+    const response = await fetch(url, {
       signal: controller.signal,
-      method: 'GET'
+      method: 'GET',
+      // Thêm headers để force trình duyệt không cache
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
     });
     
     clearTimeout(id);
@@ -97,7 +111,8 @@ export const fetchMedalTally = async (): Promise<{ data: MedalStanding[]; isFall
 
   } catch (error) {
     console.warn("Fetch failed. Using fallback simulation.", error);
-    await new Promise(resolve => setTimeout(resolve, 800));
+    // Giảm thời gian chờ fallback xuống thấp hơn để trải nghiệm mượt hơn
+    await new Promise(resolve => setTimeout(resolve, 500));
     return { data: MOCK_MEDAL_DATA, isFallback: true };
   }
 };
