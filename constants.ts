@@ -1,7 +1,7 @@
 import { MedalStanding } from './types';
 
 // New n8n Webhook API provided by user
-export const API_URL = "https://n8n.autowf.xyz/webhook/07582765-3f1d-464e-a8bf-3506599850d5";
+export const API_URL = "https://n8n.autowf.xyz/webhook/cdf60061-3fa9-4ff7-9d37-b250d9eed306";
 
 export const REFRESH_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
 
