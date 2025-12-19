@@ -15,8 +15,13 @@ const App: React.FC = () => {
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [viewMode, setViewMode] = useState<ViewMode>('table');
   
-  const loadData = useCallback(async () => {
-    setStatus(FetchStatus.LOADING);
+  // Thêm tham số isBackground để kiểm soát việc hiển thị Loading
+  const loadData = useCallback(async (isBackground = false) => {
+    // Chỉ hiện vòng xoay loading khi tải lần đầu hoặc người dùng bấm nút Refresh
+    if (!isBackground) {
+      setStatus(FetchStatus.LOADING);
+    }
+
     try {
       const { data, isFallback } = await fetchMedalTally();
       // Sort: Gold DESC, then Silver DESC, then Bronze DESC
@@ -34,19 +39,38 @@ const App: React.FC = () => {
       setStatus(isFallback ? FetchStatus.USING_FALLBACK : FetchStatus.SUCCESS);
     } catch (err) {
       console.error(err);
-      setStatus(FetchStatus.ERROR);
+      // Nếu đang chạy ngầm (auto refresh) mà lỗi thì KHÔNG hiện màn hình lỗi
+      // Giữ nguyên dữ liệu cũ để người dùng vẫn xem được
+      if (!isBackground) {
+        setStatus(FetchStatus.ERROR);
+      }
     }
   }, []);
 
   // Initial Load & Interval setup
   useEffect(() => {
-    loadData();
+    // 1. Tải lần đầu tiên khi vào trang
+    loadData(false);
 
+    // 2. Thiết lập tự động cập nhật (Chế độ nền - không hiện loading)
     const intervalId = setInterval(() => {
-      loadData();
+      loadData(true);
     }, REFRESH_INTERVAL_MS);
 
-    return () => clearInterval(intervalId);
+    // 3. XỬ LÝ LỖI NGỦ ĐÔNG: Tự động tải lại khi người dùng quay lại tab
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        console.log("User returned to tab, forcing update...");
+        loadData(false); // Tải ngay lập tức (có hiện loading để user biết data đang mới)
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      clearInterval(intervalId);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, [loadData]);
 
   return (
@@ -67,7 +91,7 @@ const App: React.FC = () => {
             
             <CountdownTimer 
               lastUpdated={lastUpdated} 
-              onRefreshNow={loadData}
+              onRefreshNow={() => loadData(false)} // Bấm tay thì hiện loading
               isLoading={status === FetchStatus.LOADING}
             />
           </div>
